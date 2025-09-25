@@ -30,10 +30,10 @@ int main() {
     // Prompt for username
     printf("Enter Username:\n");
     // TODO: Use gets() to read into data.username
-    gets(data.username);
+    fgets(data.username, sizeof(data.username), stdin);
     // TODO: Prompt for password
     // TODO: Use gets() to read into data.password
-    gets(data.password);
+    fgets(data.password);
     // TODO: Print current state and addresses of username, password, and flag
     printf("Username: %s, Address: %p", data.username, &data.username);
     printf("Password: %s, Address: %p", data.password, &data.password);
