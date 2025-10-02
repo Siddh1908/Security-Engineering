@@ -54,7 +54,7 @@ int main() {
     // TODO: Print current state and addresses of username, password, and flag
     printf("Username: %s, Address: %p \n", data.username, &data.username);
     printf("Password: %s, Address: %p \n", data.password, &data.password);
-    printf("Flag: %s, Address: %p \n", data.flag, &data.flag);
+    printf("Flag: %d, Address: %p \n", data.flag, &data.flag);
     // TODO: Add logic
     // If flag != 0 → COMPROMISED
     //   Print system_password and turn RED LED ON
