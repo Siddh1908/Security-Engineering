@@ -6,12 +6,19 @@ bz.off()
 
 def success():
     """3 short beeps."""
-    # TODO: on/off pattern
-
+   
+    for i in range(3):
+        bz.on()
+        sleep(0.1)
+        bz.off()
+        sleep(0.1)
 
 def fail():
     """1 long beep."""
-    # TODO: on/off pattern
+    
+    bz.on()
+    sleep(2.0)
+    bz.off()
 
 
 def cleanup():
