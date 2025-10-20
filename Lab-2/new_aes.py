@@ -10,8 +10,8 @@ def pad(b):
 
 def unpad(b):
     """Remove padding added by pad()."""
-    len = b[-1]
-    return b[:-len]
+    length = b[-1]
+    return b[:-length]
 
 def encrypt_ecb_blocks(pt, key):
     """Encrypt data with AES in ECB mode."""
@@ -26,10 +26,10 @@ def decrypt_ecb_blocks(ct, key):
 def encrypt_cbc_blocks(pt, key):
     """Encrypt data with AES in CBC mode, return (iv, ciphertext)."""
     iv = os.urandom(BLOCK)
-    data = AES.new(key, AES.MODE_CBC, iv)
+    data = AES.new(key, AES.MODE_CBC, iv = iv)
     return iv, data.encrypt(pad(pt))
 
 def decrypt_cbc_blocks(iv, ct, key):
     """Decrypt data with AES in CBC mode."""
-    data = AES.new(key, AES.MODE_CBC, iv)
+    data = AES.new(key, AES.MODE_CBC, iv = iv)
     return unpad(data.decrypt(ct))
