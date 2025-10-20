@@ -1,7 +1,7 @@
 from gpiozero import Buzzer
 from time import sleep
 
-bz =  None   # replace None with the correct pin number
+bz =  Buzzer(27)   # replace None with the correct pin number
 bz.off() 
 
 def success():
