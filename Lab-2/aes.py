@@ -13,7 +13,7 @@ def unpad(b):
 
 
 def encrypt_ecb_blocks(pt, key):
-    """Remove padding added by pad()."""
+    """Encrypt plaintext using AES in ECB mode with padding"""
     # TODO: check last byte value and strip that many bytes
 
 
