@@ -147,7 +147,14 @@ def string_to_bit_array(text):
     Example: 'A' -> [0,1,0,0,0,0,0,1]
     """
     # TODO: Implement string to bit array conversion
-    pass
+    bit_array = []
+    for char in text:
+	# '08b to remove the ending
+    	bits = format(ord(char), '08b')
+    	bit_array += [int(bit) for bit in bits]
+    return bit_array
+
+
 
 
 def bit_array_to_string(array):
@@ -156,7 +163,14 @@ def bit_array_to_string(array):
     Example: [0,1,0,0,0,0,0,1] -> 'A'
     """
     # TODO: Implement bit array to string conversion
-    pass
+    ConvertedString = ''
+    arraySize = len(array)
+    for i in range(0,arraySize,8):
+    	bits = array[i:i+8]
+	byte_string = ''.join(str(bit) for bit in bits)
+	char = chr(int(byte_string,2))
+	ConvertedString += char
+    return ConvertedString
 
 
 def binvalue(val, bitsize):
@@ -295,7 +309,10 @@ class des():
         Apply bitwise XOR between two lists of bits.
         """
         # TODO: Implement XOR
-        pass
+        result = []
+	for a,b in zip(t1,t2):
+		result.append(a^b)
+	return result
 
     
     def generatekeys(self):
