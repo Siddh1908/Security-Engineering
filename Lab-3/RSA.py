@@ -27,8 +27,12 @@ def gcd(a, b):
     Compute the greatest common divisor of a and b.
     """
     # TODO: implement Euclidean algorithm
-    pass
+   
+    if (a == 0):
+      return b;
 
+    return gcd(b%a, a);
+    pass
 
 def multiplicative_inverse(e, phi):
     """
@@ -36,6 +40,28 @@ def multiplicative_inverse(e, phi):
     Returns d such that (d*e) % phi == 1
     """
     # TODO: implement Extended Euclidean Algorithm
+    x = 0;
+    y = 1;
+    ph = phi;
+    prev_x = 1;
+    prev_y = 0;
+    
+
+    while phi != 0:
+      remainder = e // phi;
+      e = phi;
+      phi = e % phi;
+      prev_x = x;
+      x = prev_x - remainder * x;
+      prev_y = y;
+      y = prev_y - remainder * y;
+
+    if prev_x < 0:
+      prev_x += ph;
+
+    return prev_x
+
+
     pass
 
 
@@ -45,6 +71,17 @@ def is_prime(num):
     Return True if prime, False otherwise.
     """
     # TODO: implement primality check
+
+    if (num % 2 == 0):
+      return False
+
+    i = 3;
+    while i*i <= num:
+      if num %i ==0:
+        return False
+      i += 2
+    return True
+
     pass
 
 
@@ -61,6 +98,13 @@ def generate_keypair(p, q):
     # 2. Compute phi = (p-1)*(q-1)
     # 3. Choose e such that gcd(e, phi) = 1
     # 4. Compute d = multiplicative_inverse(e, phi)
+
+    n = p*q;
+    phi = (p-1)*(q-1);
+    e = random.randrange(2, phi)
+    d = multiplicative_inverse(e, phi)
+    return ((e, n), (d, n))
+
     pass
 
 
@@ -68,8 +112,14 @@ def encrypt(pk, plaintext):
     """
     Encrypt plaintext using key pk = (e or d, n).
     Plaintext is a string; return a list of integers (ciphertext).
-    """
+    key, n = pk
+    ciphertext = [(ord(char) ** key) % n for char in plaintext]
+    return ciphertext"""
     # TODO: implement RSA encryption
+
+    e,n = pk
+    c = [(ord(char) ** e) % n for char in plaintext]
+    return p
     pass
 
 
@@ -79,7 +129,9 @@ def decrypt(pk, ciphertext):
     Ciphertext is a list of integers; return a string (plaintext).
     """
     # TODO: implement RSA decryption
-    pass
+    d, n = pk
+    p = [chr((char ** d) % n) for char in ciphertext]
+    return ''.join(p)
 
 
 # --- Example test case ---
@@ -101,3 +153,5 @@ if __name__ == "__main__":
 
     decrypted_msg = decrypt(private, encrypted_msg)
     print("Decrypted message:", decrypted_msg)
+
+
