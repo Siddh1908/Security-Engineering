@@ -326,7 +326,15 @@ class des():
         5. Apply compression permutation (CP_2) to produce 16 subkeys
         """
         # TODO: Implement key schedule
-        pass
+        self.keys = []
+	key = string_to_bit_array(self.password)
+	key = self.permut(key, CP_1)
+	g,d = nsplit(key,28)
+	for rounds in range(16):
+		g,d = self.shift(g,d, SHIFT[rounds])
+		combine = g + d
+		subkey = self.permut(combine,CP_2)
+		self.keys.append(subkey)
 
     def shift(self, g, d, n): #Shift a list of the given value
         return g[n:] + g[:n], d[n:] + d[:n]
@@ -357,4 +365,9 @@ class des():
         Output: list of 4 bits
         """
         # TODO: Implement S-Box lookup
-        pass
+	row = (block[0] << 1) + block[5]
+        column = (block[1] << 3) + (block[2] << 2) + (block[3] << 1) + block[4]
+	val = S_BOX[round][row][column]
+	bit_string =binvalue(val,4)
+	bit_list =[int(bit) for bit in bit_string] 
+	return bit_list
