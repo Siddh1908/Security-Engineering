@@ -29,9 +29,9 @@ def gcd(a, b):
     # TODO: implement Euclidean algorithm
    
     if (a == 0):
-      return b;
+      return b
 
-    return gcd(b%a, a);
+    return gcd(b%a, a)
     pass
 
 def multiplicative_inverse(e, phi):
@@ -40,24 +40,24 @@ def multiplicative_inverse(e, phi):
     Returns d such that (d*e) % phi == 1
     """
     # TODO: implement Extended Euclidean Algorithm
-    x = 0;
-    y = 1;
-    ph = phi;
-    prev_x = 1;
-    prev_y = 0;
+    x = 0
+    y = 1
+    ph = phi
+    prev_x = 1
+    prev_y = 0
     
 
     while phi != 0:
-      remainder = e // phi;
-      e = phi;
-      phi = e % phi;
-      prev_x = x;
-      x = prev_x - remainder * x;
-      prev_y = y;
-      y = prev_y - remainder * y;
+      remainder = e // phi
+      e = phi
+      phi = e % phi
+      prev_x = x
+      x = prev_x - remainder * x
+      prev_y = y
+      y = prev_y - remainder * y
 
     if prev_x < 0:
-      prev_x += ph;
+      prev_x += ph
 
     return prev_x
 
@@ -75,7 +75,7 @@ def is_prime(num):
     if (num % 2 == 0):
       return False
 
-    i = 3;
+    i = 3
     while i*i <= num:
       if num %i ==0:
         return False
@@ -99,8 +99,8 @@ def generate_keypair(p, q):
     # 3. Choose e such that gcd(e, phi) = 1
     # 4. Compute d = multiplicative_inverse(e, phi)
 
-    n = p*q;
-    phi = (p-1)*(q-1);
+    n = p*q
+    phi = (p-1)*(q-1)
     e = random.randrange(2, phi)
     d = multiplicative_inverse(e, phi)
     return ((e, n), (d, n))
