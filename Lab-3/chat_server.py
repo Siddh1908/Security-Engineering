@@ -17,10 +17,17 @@ from RSA import decrypt
 
 # --- GPIO Setup (TODO: complete this section) ---
 # TODO: Choose the correct BCM pin for LED
+LED_PIN = 17
+h = lgpio.gpiochip_open(0)
 # TODO: Open gpiochip and claim output for the LED
+lgpio.gpio_claim_output(h, LED_PIN)
+
 
 def flash_led(duration=1.0):
     """TODO: Turn LED on, sleep, then off."""
+    lgpio.gpio_write(h, LED_PIN, 1)
+    time.sleep(duration)
+    lgpio.gpio_write(h, LED_PIN, 0)
     pass
 
 
@@ -62,9 +69,14 @@ def main():
                     continue
 
                 # TODO: Parse ciphertext string
+                cipher_str = message.split(":", 1)[1]
+                ciphertext = [int(x) for x in cipher_str.split(",") if x.strip() != ""]
                 # TODO: Decrypt with RSA
+                plaintext = decrypt(client_public_key, ciphertext)
                 # TODO: Print plaintext
+                print(plaintext)
                 # TODO: Flash LED
+                flash_led()
                 pass
 
             else:
