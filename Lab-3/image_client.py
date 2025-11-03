@@ -21,6 +21,9 @@ from des import des
 # TODO: Choose the correct BCM pin for the buzzer
 # TODO: Open gpiochip and claim output for the buzzer
 
+BUZZER_PIN = 27
+h = lgpio.gpiochip_open(0)
+
 def buzz(duration=0.3):
     """TODO: Buzzer ON -> sleep -> OFF"""
     pass
