@@ -55,18 +55,18 @@ def main():
         if msg.lower() == "exit":
             break
 
-        # TODO: Encrypt msg with RSA
-	EncryptedMSG = encrypt(public,msg)
-	print(f"EncryptedMSG with RSA : {EncryptedMSG}")
+ # TODO: Encrypt msg with RSA
+        EncryptedMSG = encrypt(public,msg)
+        print(f"EncryptedMSG with RSA : {EncryptedMSG}")
         # TODO: Convert cipher list -> comma string
-	Cipher_String = ",".join(map(str,EncryptedMSG))
-	print(f"Converted Cipher List to comma string: {Cipher_String}")
+        Cipher_String = ",".join(map(str,EncryptedMSG))
+        print(f"Converted Cipher List to comma string: {Cipher_String}")
         # TODO: Send ciphertext to server
-	package = f"CIPHER:{Cipher_String}"
-	client.sendall(package.encode("utf-8"))
-	print("Chat_Client has sent Encrypted MSG to server")
+        package = f"CIPHER:{Cipher_String}"
+        client.sendall(package.encode("utf-8"))
+        print("Chat_Client has sent Encrypted MSG to server")
         # TODO: Buzz
-	buzz()
+        buzz()
 
 
     client.close()
