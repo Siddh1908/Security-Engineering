@@ -19,10 +19,18 @@ from des import des
 
 # --- GPIO Setup (TODO: complete this section) ---
 # TODO: Choose the correct BCM pin for the LED
+LED_PIN = 27
+h = lgpio.gpiochip_open(0)
 # TODO: Open gpiochip and claim output for the LED
+lgpio.gpio_claim_output(h, LED_PIN)
 
 def flash_led(times=2, duration=0.3):
     """TODO: LED ON/OFF blinking"""
+    for i in range(times):
+        lgpio.gpio_write(h, LED_PIN, 1)
+        time.sleep(duration)
+        lgpio.gpio_write(h, LED_PIN, 0)
+        time.sleep(duration)
     pass
 
 
@@ -59,11 +67,19 @@ def main():
 
                 if message.startswith("KEY:"):
                     # TODO: Parse e,n and store client_public_key
+                    payload = message[4:]
+                    e_str, n_str = payload.split(",", 1)
+                    client_public_key = (int(e_str), int(n_str))
+
                     pass
 
 
                 elif message.startswith("DESKEY:"):
                     # TODO: Decrypt DES key using RSA
+                    from RSA import decrypt as rsa_decrypt
+                    nums = [int(x) for x in message[7:].split(",") if x]
+                    if nums:
+                        des_key = rsa_decrypt(client_public_key, nums)
                     pass
 
 
@@ -72,9 +88,18 @@ def main():
                         print("[image_server] Error: no DES key yet.")
                         continue
                     # TODO: Parse encrypted image values
+                    enc_text = message[len("IMAGE:"):]
                     # TODO: Decrypt using DES
+                    cipher = des()
+                    plain_text = cipher.decrypt(enc_text, des_key, padding=True, cbc=True)
                     # TODO: Save as penguin_decrypted.jpg
+                    with open("penguin_decrypted.jpg", "wb") as f:
+                        if isinstance(plain_text, bytes):
+                            f.write(plain_text)
+                        else:
+                            f.write(plain_text.encode("latin-1"))
                     # TODO: Flash LED
+                    flash_led()
                     pass
 
                 else:
