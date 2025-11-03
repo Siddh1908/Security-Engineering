@@ -149,12 +149,10 @@ def string_to_bit_array(text):
     # TODO: Implement string to bit array conversion
     bit_array = []
     for char in text:
-	# '08b to remove the ending
-    	bits = format(ord(char), '08b')
-    	bit_array += [int(bit) for bit in bits]
+        # '08b to remove the ending
+        bits = format(ord(char), '08b')
+        bit_array += [int(bit) for bit in bits]
     return bit_array
-
-
 
 
 def bit_array_to_string(array):
@@ -165,11 +163,11 @@ def bit_array_to_string(array):
     # TODO: Implement bit array to string conversion
     ConvertedString = ''
     arraySize = len(array)
-    for i in range(0,arraySize,8):
-    	bits = array[i:i+8]
-	byte_string = ''.join(str(bit) for bit in bits)
-	char = chr(int(byte_string,2))
-	ConvertedString += char
+    for i in range(0, arraySize, 8):
+        bits = array[i:i+8]
+        byte_string = ''.join(str(bit) for bit in bits)
+        char = chr(int(byte_string, 2))
+        ConvertedString += char
     return ConvertedString
 
 
@@ -310,11 +308,10 @@ class des():
         """
         # TODO: Implement XOR
         result = []
-	for a,b in zip(t1,t2):
-		result.append(a^b)
-	return result
+        for a, b in zip(t1, t2):
+            result.append(a ^ b)
+        return result
 
-    
     def generatekeys(self):
         """
         Generate 16 round keys from the initial key.
@@ -327,14 +324,14 @@ class des():
         """
         # TODO: Implement key schedule
         self.keys = []
-	key = string_to_bit_array(self.password)
-	key = self.permut(key, CP_1)
-	g,d = nsplit(key,28)
-	for rounds in range(16):
-		g,d = self.shift(g,d, SHIFT[rounds])
-		combine = g + d
-		subkey = self.permut(combine,CP_2)
-		self.keys.append(subkey)
+        key = string_to_bit_array(self.password)
+        key = self.permut(key, CP_1)
+        g, d = nsplit(key, 28)
+        for rounds in range(16):
+            g, d = self.shift(g, d, SHIFT[rounds])
+            combine = g + d
+            subkey = self.permut(combine, CP_2)
+            self.keys.append(subkey)
 
     def shift(self, g, d, n): #Shift a list of the given value
         return g[n:] + g[:n], d[n:] + d[:n]
@@ -365,9 +362,9 @@ class des():
         Output: list of 4 bits
         """
         # TODO: Implement S-Box lookup
-	row = (block[0] << 1) + block[5]
+        row = (block[0] << 1) + block[5]
         column = (block[1] << 3) + (block[2] << 2) + (block[3] << 1) + block[4]
-	val = S_BOX[round][row][column]
-	bit_string =binvalue(val,4)
-	bit_list =[int(bit) for bit in bit_string] 
-	return bit_list
+        val = S_BOX[round][row][column]
+        bit_string = binvalue(val, 4)
+        bit_list = [int(bit) for bit in bit_string]
+        return bit_list
