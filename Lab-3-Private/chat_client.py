@@ -1,17 +1,29 @@
+"""
+chat_client.py
+Lab: Secure Chat with RSA and Raspberry Pi GPIO
+-----------------------------------------------
+
+Your tasks:
+- Encrypt messages using your RSA implementation
+- Send the ciphertext to the server
+- Trigger buzzer feedback when sending
+"""
+
 import socket
 import time
 import lgpio
 from RSA import generate_keypair, encrypt
 
 # --- GPIO Setup (TODO: complete this section) ---
-# FIX: choose buzzer pin and claim output
-BUZZER_PIN = 18  # BCM pin for active buzzer (change if you wired differently)
-h = lgpio.gpiochip_open(0)  # FIX: open gpiochip0
-lgpio.gpio_claim_output(h, 0, BUZZER_PIN, 0)  # FIX: claim output, start LOW
+# TODO: Choose the correct BCM pin for the buzzer
+BUZZER_PIN = 27  # [FIX in TODO]
+# TODO: Open gpiochip and claim output for the buzzer
+h = lgpio.gpiochip_open(0)  # [FIX in TODO]
+lgpio.gpio_claim_output(h, BUZZER_PIN, 0)  # [FIX in TODO]
 
 def buzz(duration=0.3):
     """TODO: Make the buzzer turn ON, sleep, then OFF."""
-    # FIX: simple on/off pulse
+    # [FIX in TODO]
     lgpio.gpio_write(h, BUZZER_PIN, 1)
     time.sleep(duration)
     lgpio.gpio_write(h, BUZZER_PIN, 0)
@@ -42,25 +54,14 @@ def main():
             break
 
         # TODO: Encrypt msg with RSA
-        # NOTE: The server stores our PUBLIC key and "decrypts" with it.
-        # That means here we must "encrypt" with our PRIVATE key (signature-style),
-        # so the server can recover with our public key in this scaffold.
-        # FIX:
-        cipher_list = encrypt(private, msg)
-
+        # We encrypt with our PRIVATE so server can recover using our PUBLIC.
+        cipher_list = encrypt(private, msg)  # [FIX in TODO]
         # TODO: Convert cipher list -> comma string
-        # FIX:
-        cipher_str = ",".join(map(str, cipher_list))
-
+        cipher_str = ",".join(map(int.__str__, cipher_list))  # [FIX in TODO]
         # TODO: Send ciphertext to server
-        # FIX:
-        package = f"CIPHER:{cipher_str}"
-        client.sendall(package.encode("utf-8"))
-
+        client.sendall(f"CIPHER:{cipher_str}".encode("utf-8"))  # [FIX in TODO]
         # TODO: Buzz
-        # FIX:
-        buzz()
-        print("[chat_client] Sent encrypted message and buzzed.")
+        buzz()  # [FIX in TODO]
 
     client.close()
     lgpio.gpio_free(h, BUZZER_PIN)

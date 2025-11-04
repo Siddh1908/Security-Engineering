@@ -1,20 +1,34 @@
+"""
+chat_server.py
+Lab: Secure Chat with RSA and Raspberry Pi GPIO
+-----------------------------------------------
+
+Your tasks:
+- Parse incoming KEY and CIPHER messages
+- Store the client’s public key
+- Decrypt received ciphertext using your RSA implementation
+- Flash the LED when a valid message is received
+"""
+
 import socket
 import time
 import lgpio
 from RSA import decrypt
 
 # --- GPIO Setup (TODO: complete this section) ---
-# FIX: choose LED pin and claim output
-LED_PIN = 23  # BCM pin for LED (change if needed)
-h = lgpio.gpiochip_open(0)  # FIX: open gpiochip0
-lgpio.gpio_claim_output(h, 0, LED_PIN, 0)  # FIX: claim LED output, start LOW
+# TODO: Choose the correct BCM pin for LED
+LED_PIN = 17  # [FIX in TODO]
+# TODO: Open gpiochip and claim output for the LED
+h = lgpio.gpiochip_open(0)  # [FIX in TODO]
+lgpio.gpio_claim_output(h, LED_PIN, 0)  # [FIX in TODO]
 
 def flash_led(duration=1.0):
     """TODO: Turn LED on, sleep, then off."""
-    # FIX:
+    # [FIX in TODO]
     lgpio.gpio_write(h, LED_PIN, 1)
     time.sleep(duration)
     lgpio.gpio_write(h, LED_PIN, 0)
+
 
 # --- Socket setup ---
 HOST = "0.0.0.0"  # Listen on all interfaces
@@ -54,24 +68,15 @@ def main():
                     continue
 
                 # TODO: Parse ciphertext string
-                # FIX:
-                cipher_str = message[len("CIPHER:"):]
-                if cipher_str.strip() == "":
-                    print("[chat_server] Empty ciphertext.")
-                    continue
-                cipher_list = [int(x) for x in cipher_str.split(",")]
-
-                # TODO: Decrypt with RSA (using client's PUBLIC key per scaffold)
-                # FIX:
-                plaintext = decrypt(client_public_key, cipher_list)
-
+                # TODO: Decrypt with RSA
                 # TODO: Print plaintext
-                # FIX:
-                print(f"[chat_server] Decrypted message: {plaintext}")
-
                 # TODO: Flash LED
-                # FIX:
-                flash_led(0.2)
+                # [FIX in TODO]
+                _, payload = message.split(":", 1)
+                cipher = [int(x) for x in payload.split(",") if x]
+                plaintext = decrypt(client_public_key, cipher)
+                print(f"[chat_server] Message: {plaintext}")
+                flash_led()
 
             else:
                 print(f"[chat_server] Unknown message format: {message}")
