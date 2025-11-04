@@ -15,14 +15,12 @@ import lgpio
 from RSA import generate_keypair, encrypt
 
 # --- GPIO Setup (TODO: complete this section) ---
-
 # TODO: Choose the correct BCM pin for the buzzer
-BUZZER_PIN = 27
-h = lgpio.gpiochip_open(0)
-
+BUZZER_PIN = 27 
 
 # TODO: Open gpiochip and claim output for the buzzer
-lgpio.gpio_claim_output(h, BUZZER_PIN)
+h = lgpio.gpiochip_open(0)
+lgpio.gpio_claim_output(h, BUZZER_PIN, 0) 
 
 def buzz(duration=0.3):
     """TODO: Make the buzzer turn ON, sleep, then OFF."""
@@ -32,12 +30,11 @@ def buzz(duration=0.3):
 
 # --- RSA setup (use your primes from prime_numbers.xlsx) ---
 p, q = 3557, 2579
-public, private = generate_keypair(p, q)  # (e, n), (d, n)
+public, private = generate_keypair(p, q)
 
 # --- Socket setup ---
 HOST = "127.0.0.1"   # Change to server IP if needed
 PORT = 5000
-
 def main():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((HOST, PORT))
@@ -55,19 +52,15 @@ def main():
         if msg.lower() == "exit":
             break
 
- # TODO: Encrypt msg with RSA
-        EncryptedMSG = encrypt(public,msg)
-        print(f"EncryptedMSG with RSA : {EncryptedMSG}")
-        # TODO: Convert cipher list -> comma string
-        Cipher_String = ",".join(map(str,EncryptedMSG))
-        print(f"Converted Cipher List to comma string: {Cipher_String}")
-        # TODO: Send ciphertext to server
-        package = f"CIPHER:{Cipher_String}"
-        client.sendall(package.encode("utf-8"))
-        print("Chat_Client has sent Encrypted MSG to server")
-        # TODO: Buzz
-        buzz()
+        # TODO: Encrypt msg with RSA
+        list = encrypt(private, msg)
 
+        # TODO: Convert cipher list -> comma string
+        string = ",".join(map(int.__str__,list))
+        # TODO: Send ciphertext to server
+        client.sendall(f"CIPHER:{string}".encode("utf-8"))
+        # TODO: Buzz
+        buzz() 
 
     client.close()
     lgpio.gpio_free(h, BUZZER_PIN)
