@@ -14,25 +14,22 @@ import socket
 import time
 import lgpio
 
-from RSA import generate_keypair
+from RSA import generate_keypair  # NOTE: encrypt used with PRIVATE for server to verify via PUBLIC
 from des import des
 
 # --- GPIO Setup (TODO: complete this section) ---
 # TODO: Choose the correct BCM pin for the buzzer
+BUZZER_PIN = 27  # [FIX in TODO]
 # TODO: Open gpiochip and claim output for the buzzer
-BUZZER_PIN = 27
-h = lgpio.gpiochip_open(0)
-
-
-# TODO: Open gpiochip and claim output for the buzzer
-lgpio.gpio_claim_output(h, BUZZER_PIN)
+h = lgpio.gpiochip_open(0)  # [FIX in TODO]
+lgpio.gpio_claim_output(h, BUZZER_PIN, 0)  # [FIX in TODO]
 
 def buzz(duration=0.3):
     """TODO: Buzzer ON -> sleep -> OFF"""
+    # [FIX in TODO]
     lgpio.gpio_write(h, BUZZER_PIN, 1)
     time.sleep(duration)
     lgpio.gpio_write(h, BUZZER_PIN, 0)
-    pass
 
 # --- RSA setup ---
 p, q = 3557, 2579
@@ -47,12 +44,13 @@ with open("penguin.jpg", "rb") as f:
     image_bytes = f.read()
 
 # TODO: Convert image_bytes to string (latin-1 safe)
-image_text = image_bytes.decode("latin-1")
+image_text = image_bytes.decode("latin-1")  # [FIX in TODO]
 # TODO: Encrypt with DES (use padding=True, cbc=True)
-des_encrypted = cipher.encrypt(image_text, des_key, padding=True, cbc=True)
+des_encrypted = cipher.encrypt(des_key, image_text, padding=True, cbc=True)  # [FIX in TODO]
 # TODO: Encrypt DES key with RSA
-from RSA import encrypt as rsa_encrypt
-rsa_encrypted_des_key = rsa_encrypt(public, des_key)
+# We encrypt with our PRIVATE so the server can recover it with our PUBLIC it received.
+rk, n = private
+rsa_encrypted_key = [pow(ord(ch), rk, n) for ch in des_key]
 
 # --- Socket setup ---
 HOST = "127.0.0.1"
@@ -65,19 +63,21 @@ def main():
 
     # Step 1: Send RSA public key
     # TODO
-    e, n = public
-    client.sendall(f"KEY:{e},{n}\n".encode("utf-8"))
+    e, n = public  # [FIX in TODO]
+    client.sendall(f"KEY:{e},{n}\n".encode("utf-8"))  # [FIX in TODO]
+    print("[image_client] Sent public key.")
 
     # Step 2: Send encrypted DES key
     # TODO
-    deskey_payload = "DESKEY:" + ",".join(str(x) for x in rsa_encrypted_des_key) + "\n"
-    client.sendall(deskey_payload.encode("utf-8"))
+    key_payload = ",".join(map(str, rsa_encrypted_key))  # [FIX in TODO]
+    client.sendall(f"DESKEY:{key_payload}\n".encode("utf-8"))  # [FIX in TODO]
+    print("[image_client] Sent RSA-encrypted DES key.")
 
     # Step 3: Send encrypted image
     # TODO
-    des_bytes = des_encrypted.encode("latin-1")
-    client.sendall(f"IMG_LEN:{len(des_bytes)}\n".encode("utf-8"))
-    client.sendall(des_bytes)
+    img_payload = ",".join(str(ord(c)) for c in des_encrypted)  # [FIX in TODO]
+    client.sendall(f"IMAGE:{img_payload}\n".encode("utf-8"))  # [FIX in TODO]
+    print("[image_client] Sent DES-encrypted image.")
 
     # Feedback
     buzz()
