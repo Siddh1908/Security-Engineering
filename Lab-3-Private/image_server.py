@@ -1,23 +1,39 @@
+"""
+image_server.py
+Lab: Secure Image Transfer with RSA, DES, and Raspberry Pi GPIO
+---------------------------------------------------------------
+
+Your tasks:
+- Parse incoming KEY, DESKEY, and IMAGE messages
+- Decrypt the DES key using RSA
+- Decrypt the image using DES
+- Save the decrypted image as penguin_decrypted.jpg
+- Flash LED on successful decryption
+"""
+
 import socket
 import time
 import lgpio
 
+from RSA import decrypt
 from des import des
 
 # --- GPIO Setup (TODO: complete this section) ---
-# FIX: choose LED pin and claim output
-LED_PIN = 23
-h = lgpio.gpiochip_open(0)
-lgpio.gpio_claim_output(h, 0, LED_PIN, 0)
+# TODO: Choose the correct BCM pin for the LED
+LED_PIN = 17  # [FIX in TODO]
+# TODO: Open gpiochip and claim output for the LED
+h = lgpio.gpiochip_open(0)  # [FIX in TODO]
+lgpio.gpio_claim_output(h, LED_PIN, 0)  # [FIX in TODO]
 
 def flash_led(times=2, duration=0.3):
     """TODO: LED ON/OFF blinking"""
-    # FIX:
+    # [FIX in TODO]
     for _ in range(times):
         lgpio.gpio_write(h, LED_PIN, 1)
         time.sleep(duration)
         lgpio.gpio_write(h, LED_PIN, 0)
         time.sleep(duration)
+
 
 # --- Socket setup ---
 HOST = "0.0.0.0"
@@ -35,6 +51,7 @@ def main():
 
     client_public_key = None  # (e, n)
     des_key = None
+    des_cipher = des()
 
     try:
         buffer = ""
@@ -52,51 +69,41 @@ def main():
 
                 if message.startswith("KEY:"):
                     # TODO: Parse e,n and store client_public_key
-                    # FIX:
+                    # [FIX in TODO]
                     _, key_str = message.split(":", 1)
                     e_str, n_str = key_str.split(",", 1)
                     client_public_key = (int(e_str), int(n_str))
-                    print(f"[image_server] Received client PUBLIC key: {client_public_key}")
+                    print(f"[image_server] Received PUBLIC key: {client_public_key}")
 
                 elif message.startswith("DESKEY:"):
                     # TODO: Decrypt DES key using RSA
-                    # Per scaffold: client "encrypted" with PRIVATE; we "decrypt" with PUBLIC (e,n)
-                    # FIX:
+                    # [FIX in TODO]
                     if client_public_key is None:
                         print("[image_server] Error: no public key yet.")
                         continue
-                    e, n = client_public_key
-                    key_payload = message[len("DESKEY:"):]
-                    cipher_vals = [int(x) for x in key_payload.split(",") if x]
-                    recovered = "".join(chr(pow(c, e, n)) for c in cipher_vals)
-                    des_key = recovered
-                    print(f"[image_server] Recovered DES key: {repr(des_key)}")
+                    _, payload = message.split(":", 1)
+                    cipher_list = [int(x) for x in payload.split(",") if x]
+                    des_key = decrypt(client_public_key, cipher_list)
+                    print("[image_server] Recovered DES key.")
 
                 elif message.startswith("IMAGE:"):
                     if des_key is None:
                         print("[image_server] Error: no DES key yet.")
                         continue
                     # TODO: Parse encrypted image values
-                    # FIX:
-                    img_payload = message[len("IMAGE:"):]
-                    enc_img_vals = [int(x) for x in img_payload.split(",") if x]
-                    enc_img_text = "".join(chr(v) for v in enc_img_vals)
-
                     # TODO: Decrypt using DES
-                    # FIX:
-                    cipher = des()
-                    dec_text = cipher.decrypt(des_key, enc_img_text, padding=True, cbc=True, IV='ASASASAS')
-
                     # TODO: Save as penguin_decrypted.jpg
-                    # FIX: dec_text is a Latin-1 string → bytes
-                    dec_bytes = dec_text.encode("latin-1")
-                    with open("penguin_decrypted.jpg", "wb") as f:
-                        f.write(dec_bytes)
-                    print("[image_server] Wrote penguin_decrypted.jpg")
-
                     # TODO: Flash LED
-                    # FIX:
-                    flash_led(times=3, duration=0.15)
+                    # [FIX in TODO]
+                    _, payload = message.split(":", 1)
+                    enc_chars = [chr(int(x)) for x in payload.split(",") if x]
+                    enc_text = "".join(enc_chars)
+                    plain_text = des_cipher.decrypt(des_key, enc_text, padding=True, cbc=True)
+                    plain_bytes = plain_text.encode("latin-1")
+                    with open("penguin_decrypted.jpg", "wb") as f:
+                        f.write(plain_bytes)
+                    print("[image_server] Decrypted image saved as penguin_decrypted.jpg")
+                    flash_led()
 
                 else:
                     print(f"[image_server] Unknown message: {message}")

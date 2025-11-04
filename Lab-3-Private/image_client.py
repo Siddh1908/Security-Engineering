@@ -1,19 +1,32 @@
+"""
+image_client.py
+Lab: Secure Image Transfer with RSA, DES, and Raspberry Pi GPIO
+---------------------------------------------------------------
+
+Your tasks:
+- Use your RSA implementation to encrypt the DES key
+- Use your DES implementation to encrypt the image
+- Send the encrypted key and image to the server
+- Buzz when the image is sent
+"""
+
 import socket
 import time
 import lgpio
 
-from RSA import generate_keypair
+from RSA import generate_keypair, encrypt  # NOTE: encrypt used with PRIVATE for server to verify via PUBLIC
 from des import des
 
 # --- GPIO Setup (TODO: complete this section) ---
-# FIX: choose buzzer pin and claim output
-BUZZER_PIN = 18
-h = lgpio.gpiochip_open(0)
-lgpio.gpio_claim_output(h, 0, BUZZER_PIN, 0)
+# TODO: Choose the correct BCM pin for the buzzer
+BUZZER_PIN = 27  # [FIX in TODO]
+# TODO: Open gpiochip and claim output for the buzzer
+h = lgpio.gpiochip_open(0)  # [FIX in TODO]
+lgpio.gpio_claim_output(h, BUZZER_PIN, 0)  # [FIX in TODO]
 
 def buzz(duration=0.3):
     """TODO: Buzzer ON -> sleep -> OFF"""
-    # FIX:
+    # [FIX in TODO]
     lgpio.gpio_write(h, BUZZER_PIN, 1)
     time.sleep(duration)
     lgpio.gpio_write(h, BUZZER_PIN, 0)
@@ -31,20 +44,12 @@ with open("penguin.jpg", "rb") as f:
     image_bytes = f.read()
 
 # TODO: Convert image_bytes to string (latin-1 safe)
-# FIX:
-image_text = image_bytes.decode("latin-1")
-
+image_text = image_bytes.decode("latin-1")  # [FIX in TODO]
 # TODO: Encrypt with DES (use padding=True, cbc=True)
-# IMPORTANT: des.encrypt(key, text, ...) → key first, then text
-# FIX:
-des_encrypted_text = cipher.encrypt(des_key, image_text, padding=True, cbc=True, IV='ASASASAS')
-
+des_encrypted = cipher.encrypt(des_key, image_text, padding=True, cbc=True)  # [FIX in TODO]
 # TODO: Encrypt DES key with RSA
-# NOTE: Server will use our PUBLIC key to "decrypt" per scaffold, so we "encrypt" with PRIVATE
-# FIX: do pow with private key directly (avoids needing RSA.encrypt import)
-d, n = private
-enc_des_key_list = [pow(ord(ch), d, n) for ch in des_key]
-enc_des_key_str = ",".join(map(str, enc_des_key_list))
+# We encrypt with our PRIVATE so the server can recover it with our PUBLIC it received.
+rsa_encrypted_key = encrypt(private, des_key)  # list[int]  [FIX in TODO]
 
 # --- Socket setup ---
 HOST = "127.0.0.1"
@@ -56,19 +61,22 @@ def main():
     print(f"[image_client] Connected to {HOST}:{PORT}")
 
     # Step 1: Send RSA public key
-    # FIX:
-    e, nn = public
-    client.sendall(f"KEY:{e},{nn}\n".encode("utf-8"))
+    # TODO
+    e, n = public  # [FIX in TODO]
+    client.sendall(f"KEY:{e},{n}\n".encode("utf-8"))  # [FIX in TODO]
+    print("[image_client] Sent public key.")
 
     # Step 2: Send encrypted DES key
-    # FIX:
-    client.sendall(f"DESKEY:{enc_des_key_str}\n".encode("utf-8"))
+    # TODO
+    key_payload = ",".join(map(str, rsa_encrypted_key))  # [FIX in TODO]
+    client.sendall(f"DESKEY:{key_payload}\n".encode("utf-8"))  # [FIX in TODO]
+    print("[image_client] Sent RSA-encrypted DES key.")
 
-    # Step 3: Send encrypted image (as comma-separated ints)
-    # FIX:
-    enc_img_list = [ord(ch) for ch in des_encrypted_text]  # already ciphertext as text
-    enc_img_str = ",".join(map(str, enc_img_list))
-    client.sendall(f"IMAGE:{enc_img_str}\n".encode("utf-8"))
+    # Step 3: Send encrypted image
+    # TODO
+    img_payload = ",".join(str(ord(c)) for c in des_encrypted)  # [FIX in TODO]
+    client.sendall(f"IMAGE:{img_payload}\n".encode("utf-8"))  # [FIX in TODO]
+    print("[image_client] Sent DES-encrypted image.")
 
     # Feedback
     buzz()
