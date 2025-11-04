@@ -1,6 +1,6 @@
 import random
 
-ef gcd(a, b):
+def gcd(a, b):
     """
     Compute the greatest common divisor of a and b.
     """
