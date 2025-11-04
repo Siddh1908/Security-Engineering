@@ -26,36 +26,39 @@ def gcd(a, b):
     """
     Compute the greatest common divisor of a and b.
     """
-    while b:
-        a, b = b, a % b
-    return a
+    
+    while b != 0:
+        a,b=b, a % b
+    return abs(a)
+
 
 def multiplicative_inverse(e, phi):
     """
     Compute the modular inverse of e modulo phi.
     Returns d such that (d*e) % phi == 1
     """
-    ph = phi
-    # Extended Euclidean Algorithm using your variable names
-    x, prev_x = 0, 1
-    y, prev_y = 1, 0
-    a, b = e, phi
-    while b != 0:
-        remainder = a // b
-        a, b = b, a % b
-        prev_x, x = x, prev_x - remainder * x
-        prev_y, y = y, prev_y - remainder * y
-    if a != 1:
-        return None
-    if prev_x < 0:
-        prev_x += ph
-    return prev_x
+    # TODO: implement Extended Euclidean Algorithm
+    old_x, x = e, phi
+    old_y, y = 1, 0
+    old_z, z = 0, 1
+
+    while x != 0:
+        remainder = old_x // x
+        old_x,x = x, old_x - remainder * x
+        old_y,y = y, old_y - remainder * y
+        old_z,z = z, old_z - remainder * z
+
+    if old_x != 1:
+        temp = old_y % phi
+    return temp
+
 
 def is_prime(num):
     """
     Check if a number is prime.
     Return True if prime, False otherwise.
     """
+    # TODO: implement primality check
     if num <= 1:
         return False
     if num <= 3:
@@ -68,6 +71,7 @@ def is_prime(num):
             return False
         i += 2
     return True
+    
 
 def generate_keypair(p, q):
     """
@@ -76,6 +80,12 @@ def generate_keypair(p, q):
     - public = (e, n)
     - private = (d, n)
     """
+    # TODO: implement RSA keypair generation
+    # Steps:
+    # 1. Compute n = p * q
+    # 2. Compute phi = (p-1)*(q-1)
+    # 3. Choose e such that gcd(e, phi) = 1
+    # 4. Compute d = multiplicative_inverse(e, phi)
     n = p * q
     phi = (p - 1) * (q - 1)
     e = random.randrange(2, phi)
@@ -84,25 +94,30 @@ def generate_keypair(p, q):
     d = multiplicative_inverse(e, phi)
     return ((e, n), (d, n))
 
+
+
 def encrypt(pk, plaintext):
     """
     Encrypt plaintext using key pk = (e or d, n).
     Plaintext is a string; return a list of integers (ciphertext).
     """
-    e, n = pk
-    c = [pow(ord(char), e, n) for char in plaintext]
-    return c
+    # TODO: implement RSA encryption
+    k,n = pk
+    return [pow(ord(ch),k,n) for ch in plaintext]
+    pass
+
 
 def decrypt(pk, ciphertext):
     """
     Decrypt ciphertext using key pk = (e or d, n).
     Ciphertext is a list of integers; return a string (plaintext).
     """
-    d, n = pk
-    if isinstance(ciphertext, int):
-        ciphertext = [ciphertext]
-    p = [chr(pow(char, d, n)) for char in ciphertext]
-    return ''.join(p)
+    # TODO: implement RSA decryption
+    k,n = pk
+    chars = [chr(pow(c,k,n)) for c in ciphertext]
+    return "".join(chars)
+    
+
 
 # --- Example test case ---
 if __name__ == "__main__":
@@ -123,5 +138,3 @@ if __name__ == "__main__":
 
     decrypted_msg = decrypt(private, encrypted_msg)
     print("Decrypted message:", decrypted_msg)
-
-
