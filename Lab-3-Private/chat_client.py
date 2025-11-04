@@ -16,26 +16,25 @@ from RSA import generate_keypair, encrypt
 
 # --- GPIO Setup (TODO: complete this section) ---
 # TODO: Choose the correct BCM pin for the buzzer
-BUZZER_PIN = 27  # [FIX in TODO]
+BUZZER_PIN = 27 
+
 # TODO: Open gpiochip and claim output for the buzzer
-h = lgpio.gpiochip_open(0)  # [FIX in TODO]
-lgpio.gpio_claim_output(h, BUZZER_PIN, 0)  # [FIX in TODO]
+h = lgpio.gpiochip_open(0)
+lgpio.gpio_claim_output(h, BUZZER_PIN, 0) 
 
 def buzz(duration=0.3):
     """TODO: Make the buzzer turn ON, sleep, then OFF."""
-    # [FIX in TODO]
     lgpio.gpio_write(h, BUZZER_PIN, 1)
     time.sleep(duration)
     lgpio.gpio_write(h, BUZZER_PIN, 0)
 
 # --- RSA setup (use your primes from prime_numbers.xlsx) ---
 p, q = 3557, 2579
-public, private = generate_keypair(p, q)  # (e, n), (d, n)
+public, private = generate_keypair(p, q)
 
 # --- Socket setup ---
 HOST = "127.0.0.1"   # Change to server IP if needed
 PORT = 5000
-
 def main():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((HOST, PORT))
@@ -54,14 +53,14 @@ def main():
             break
 
         # TODO: Encrypt msg with RSA
-        # We encrypt with our PRIVATE so server can recover using our PUBLIC.
-        cipher_list = encrypt(private, msg)  # [FIX in TODO]
+        list = encrypt(private, msg)
+
         # TODO: Convert cipher list -> comma string
-        cipher_str = ",".join(map(int.__str__, cipher_list))  # [FIX in TODO]
+        string = ",".join(map(int.__str__,list))
         # TODO: Send ciphertext to server
-        client.sendall(f"CIPHER:{cipher_str}".encode("utf-8"))  # [FIX in TODO]
+        client.sendall(f"CIPHER:{string}".encode("utf-8"))
         # TODO: Buzz
-        buzz()  # [FIX in TODO]
+        buzz() 
 
     client.close()
     lgpio.gpio_free(h, BUZZER_PIN)
