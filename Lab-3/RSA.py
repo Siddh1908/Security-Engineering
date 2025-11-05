@@ -49,9 +49,10 @@ def multiplicative_inverse(e, phi):
         old_z,z = z, old_z - remainder * z
 
     if old_x != 1:
-        temp = old_y % phi
-    return temp
+       return None
 
+    temp = old_y % phi
+    return temp
 
 def is_prime(num):
     """
