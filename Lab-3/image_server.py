@@ -1,4 +1,4 @@
-"""
+""
 image_server.py
 Lab: Secure Image Transfer with RSA, DES, and Raspberry Pi GPIO
 ---------------------------------------------------------------
@@ -27,7 +27,7 @@ lgpio.gpio_claim_output(h, LED_PIN, 0)
 
 def flash_led(times=2, duration=0.3):
     """TODO: LED ON/OFF blinking"""
-    for i in range(times):
+    for i in range(int(times)):
         lgpio.gpio_write(h, LED_PIN, 1)
         time.sleep(duration)
         lgpio.gpio_write(h, LED_PIN, 0)
@@ -76,7 +76,7 @@ def main():
                 elif message.startswith("DESKEY:"):
                     # TODO: Decrypt DES key using RSA
                     convert = [int(x) for x in message[7:].split(",") if x]
-                    if convert and client_public_key is not NONE:
+                    if convert and client_public_key is not None:
                        e, n = client_public_key
                        text = ""
                        for c in convert:
@@ -95,9 +95,8 @@ def main():
                     p_text =des().decrypt(encrypted_image, des_key, padding=True, cbc=True)
                     # TODO: Save as penguin_decrypted.jpg
                     with open("penguin_decrypted.jpg", "wb") as f:
-                        f.write(p_text)
+                        f.write(p_text.encode("latin-1"))
                     print("[image_server] Decrypted image saved as penguin_decrypted.jpg")
-
                     # TODO: Flash LED
                     flash_led(0.1)
 
@@ -117,5 +116,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
