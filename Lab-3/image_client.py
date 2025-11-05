@@ -51,7 +51,6 @@ txt = image_bytes.decode("latin-1")
 # TODO: Encrypt with DES (use padding=True, cbc=True)
 d_encrypt = cipher.encrypt(des_key, txt, padding=True, cbc=True)
 # TODO: Encrypt DES key with RSA
-
 key, n = private
 RSA_E = [pow(ord(ch), key, n) for ch in des_key]
 
