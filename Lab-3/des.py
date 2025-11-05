@@ -164,7 +164,7 @@ def bit_array_to_string(array):
     for i in range(0, len(array),8):
         byte = array[i:i+8]
         values = int("".join(str(b) for b in byte),2)
-        characters.appen(chr(val))
+        characters.append(chr(values))
     return "".join(characters)
 
 
