@@ -7,7 +7,7 @@ if the trial count goes lower? What do you see?"""
 TRIALS = 120
 
 """TODO: Fill in the alphabet"""
-ALPHABET = "" 
+ALPHABET = "string.ascii_letters + string.digits + "!@#$%^&*()-_=+{}[];:'\",.<>?/\\|"" 
 
 
 def measure():
